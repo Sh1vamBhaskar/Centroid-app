@@ -28,56 +28,186 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader("Authorization");
 
-        String email = null;
-        String jwt = null;
+        System.out.println(
+                "========================================"
+        );
 
-        // Check for Bearer token
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        System.out.println(
+                "JWT CHECK: Request = "
+                        + request.getMethod()
+                        + " "
+                        + request.getRequestURI()
+        );
 
-            jwt = authHeader.substring(7);
+        // 1. Check Authorization header
+        if (authHeader == null) {
 
-            try {
-                email = jwtService.extractEmail(jwt);
-            } catch (Exception ignored) {
-                // Invalid token; continue without authentication.
-            }
+            System.out.println(
+                    "JWT CHECK: No Authorization header"
+            );
+
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        // Authenticate the user if a valid JWT is present
-        if (email != null
-                && SecurityContextHolder.getContext().getAuthentication() == null) {
+        System.out.println(
+                "JWT CHECK: Authorization header received"
+        );
 
-            try {
-                UserDetails userDetails =
-                        userDetailsService.loadUserByUsername(email);
+        // 2. Check Bearer format
+        if (!authHeader.startsWith("Bearer ")) {
 
-                if (jwtService.isTokenValid(jwt)) {
+            System.out.println(
+                    "JWT CHECK: Authorization header is NOT Bearer"
+            );
 
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(
-                                    userDetails,
-                                    null,
-                                    userDetails.getAuthorities()
-                            );
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-                    authentication.setDetails(
-                            new WebAuthenticationDetailsSource()
-                                    .buildDetails(request)
+        // 3. Extract token
+        String jwt = authHeader.substring(7);
+
+        System.out.println(
+                "JWT CHECK: Token extracted"
+        );
+
+        // 4. Extract email
+        String email;
+
+        try {
+
+            email = jwtService.extractEmail(jwt);
+
+            System.out.println(
+                    "JWT CHECK: Extracted email = " + email
+            );
+
+        } catch (Exception e) {
+
+            System.out.println(
+                    "JWT CHECK: FAILED TO EXTRACT TOKEN"
+            );
+
+            System.out.println(
+                    "JWT CHECK ERROR: "
+                            + e.getClass().getSimpleName()
+                            + " - "
+                            + e.getMessage()
+            );
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 5. Check whether authentication already exists
+        if (SecurityContextHolder
+                .getContext()
+                .getAuthentication() != null) {
+
+            System.out.println(
+                    "JWT CHECK: Authentication already exists"
+            );
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 6. Load user
+        UserDetails userDetails;
+
+        try {
+
+            userDetails =
+                    userDetailsService.loadUserByUsername(email);
+
+            System.out.println(
+                    "JWT CHECK: User loaded = "
+                            + userDetails.getUsername()
+            );
+
+        } catch (Exception e) {
+
+            System.out.println(
+                    "JWT CHECK: FAILED TO LOAD USER"
+            );
+
+            System.out.println(
+                    "JWT CHECK ERROR: "
+                            + e.getClass().getSimpleName()
+                            + " - "
+                            + e.getMessage()
+            );
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 7. Validate token
+        boolean valid;
+
+        try {
+
+            valid = jwtService.isTokenValid(jwt);
+
+            System.out.println(
+                    "JWT CHECK: Token valid = " + valid
+            );
+
+        } catch (Exception e) {
+
+            System.out.println(
+                    "JWT CHECK: TOKEN VALIDATION EXCEPTION"
+            );
+
+            System.out.println(
+                    "JWT CHECK ERROR: "
+                            + e.getClass().getSimpleName()
+                            + " - "
+                            + e.getMessage()
+            );
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 8. Set authentication
+        if (valid) {
+
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
                     );
 
-                    SecurityContextHolder
-                            .getContext()
-                            .setAuthentication(authentication);
-                }
+            authentication.setDetails(
+                    new WebAuthenticationDetailsSource()
+                            .buildDetails(request)
+            );
 
-            } catch (Exception ignored) {
-                // Authentication failed; request continues unauthenticated.
-            }
+            SecurityContextHolder
+                    .getContext()
+                    .setAuthentication(authentication);
+
+            System.out.println(
+                    "JWT CHECK: Authentication set successfully"
+            );
+
+        } else {
+
+            System.out.println(
+                    "JWT CHECK: Authentication NOT set"
+            );
         }
 
-        // Continue the request
+        System.out.println(
+                "========================================"
+        );
+
+        // 9. Continue request
         filterChain.doFilter(request, response);
     }
 }
