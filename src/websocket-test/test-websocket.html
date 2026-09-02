@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Centroid WebSocket Test</title>
+</head>
+<body>
+
+<h2>Centroid WebSocket Test</h2>
+
+<button onclick="connectWebSocket()">Connect</button>
+<button onclick="subscribeToChat()">Subscribe</button>
+<button onclick="sendMessage()">Send Message</button>
+
+<pre id="output"></pre>
+
+<script>
+    let socket = null;
+
+    // Paste a fresh User 6 JWT here
+    const token = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJzaXh0aEBnbWFpbC5jb20iLCJpYXQiOjE3ODgzNzcxNTYsImV4cCI6MTc4ODM4MDc1Nn0.nSLYrWVl-uIVhQOtfTbElq0SscPcfD1c79TKtj3pdYDmx46WxakQ2yQn9auVW-Jv";
+
+    function log(message) {
+        document.getElementById("output").textContent +=
+            message + "\n";
+    }
+
+    function connectWebSocket() {
+
+        socket = new WebSocket("ws://localhost:8080/ws");
+
+        socket.onopen = function () {
+
+            log("WebSocket connected");
+
+            const connectFrame =
+                "CONNECT\n" +
+                "accept-version:1.2\n" +
+                "Authorization:Bearer " + token + "\n" +
+                "host:localhost\n" +
+                "\n" +
+                "\0";
+
+            socket.send(connectFrame);
+
+            log("STOMP CONNECT sent");
+        };
+
+        socket.onmessage = function (event) {
+
+            log("SERVER:");
+            log(event.data);
+        };
+
+        socket.onerror = function (error) {
+
+            log("WebSocket error");
+            console.error(error);
+        };
+
+        socket.onclose = function () {
+
+            log("WebSocket disconnected");
+        };
+    }
+
+    function subscribeToChat() {
+
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+            log("WebSocket is not connected");
+            return;
+        }
+
+        const subscribeFrame =
+            "SUBSCRIBE\n" +
+            "id:chat-1\n" +
+            "destination:/topic/chat/1\n" +
+            "\n" +
+            "\0";
+
+        socket.send(subscribeFrame);
+
+        log("SUBSCRIBE sent");
+    }
+
+    function sendMessage() {
+
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+            log("WebSocket is not connected");
+            return;
+        }
+
+        const body = JSON.stringify({
+            conversationId: 1,
+            content: "Hello from Centroid WebSocket!"
+        });
+
+        const sendFrame =
+            "SEND\n" +
+            "destination:/app/chat\n" +
+            "Authorization:Bearer " + token + "\n" +
+            "content-type:application/json\n" +
+            "content-length:" + body.length + "\n" +
+            "\n" +
+            body +
+            "\0";
+
+        socket.send(sendFrame);
+
+        log("SEND frame sent");
+    }
+</script>
+
+</body>
+</html>
