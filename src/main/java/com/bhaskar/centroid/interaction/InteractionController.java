@@ -1,4 +1,5 @@
 package com.bhaskar.centroid.interaction;
+import com.bhaskar.centroid.dto.InteractionStatusResponse;
 
 import com.bhaskar.centroid.dto.InteractionRequest;
 import com.bhaskar.centroid.dto.InteractionResponse;
@@ -102,6 +103,33 @@ public class InteractionController {
                         interaction.getReceiver().getId(),
                         interaction.getStatus(),
                         interaction.getCreatedAt()
+                )
+        );
+    }
+    @GetMapping("/status/{userId}")
+    public ResponseEntity<InteractionStatusResponse> getInteractionStatus(
+            @PathVariable Long userId,
+            Authentication authentication) {
+
+        Interaction interaction =
+                interactionService.getLatestInteraction(
+                        authentication.getName(),
+                        userId
+                );
+
+        if (interaction == null) {
+            return ResponseEntity.ok(
+                    new InteractionStatusResponse(
+                            null,
+                            null
+                    )
+            );
+        }
+
+        return ResponseEntity.ok(
+                new InteractionStatusResponse(
+                        interaction.getStatus(),
+                        interaction.getId()
                 )
         );
     }

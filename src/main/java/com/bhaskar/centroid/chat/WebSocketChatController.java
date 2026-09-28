@@ -2,12 +2,17 @@ package com.bhaskar.centroid.chat;
 
 import com.bhaskar.centroid.dto.ChatMessageRequest;
 import com.bhaskar.centroid.dto.MessageResponse;
-import com.bhaskar.centroid.security.JwtService;
+import com.bhaskar.centroid.security.WebSocketAuthInterceptor;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+
 import org.springframework.stereotype.Controller;
+
+import java.security.Principal;
 
 @Controller
 @RequiredArgsConstructor
@@ -15,50 +20,34 @@ public class WebSocketChatController {
 
     private final MessageService messageService;
     private final SimpMessagingTemplate messagingTemplate;
-    private final JwtService jwtService;
+    private final WebSocketAuthInterceptor webSocketAuthInterceptor;
 
     @MessageMapping("/chat")
     public void sendMessage(
             ChatMessageRequest request,
             StompHeaderAccessor accessor) {
 
-        // Get JWT from the SEND frame
-        String authHeader =
-                accessor.getFirstNativeHeader("Authorization");
+        String sessionId =
+                accessor.getSessionId();
 
-        if (authHeader == null ||
-                !authHeader.startsWith("Bearer ")) {
+        Principal user =
+                webSocketAuthInterceptor
+                        .getSessionUser(sessionId);
+
+        if (user == null) {
 
             throw new IllegalArgumentException(
-                    "Authorization token is required"
+                    "WebSocket authentication required"
             );
         }
 
-        String jwt = authHeader.substring(7);
+        String email = user.getName();
 
-        // Extract email from JWT
-        String email;
+        System.out.println(
+                "WS CHAT: sending message as = "
+                        + email
+        );
 
-        try {
-
-            email = jwtService.extractEmail(jwt);
-
-        } catch (Exception e) {
-
-            throw new IllegalArgumentException(
-                    "Invalid JWT"
-            );
-        }
-
-        // Validate JWT
-        if (!jwtService.isTokenValid(jwt)) {
-
-            throw new IllegalArgumentException(
-                    "Invalid or expired JWT"
-            );
-        }
-
-        // Save message
         Message message =
                 messageService.sendMessage(
                         email,
@@ -66,7 +55,6 @@ public class WebSocketChatController {
                         request.getContent()
                 );
 
-        // Prepare response
         MessageResponse response =
                 new MessageResponse(
                         message.getId(),
@@ -76,9 +64,9 @@ public class WebSocketChatController {
                         message.getCreatedAt()
                 );
 
-        // Broadcast to conversation
         messagingTemplate.convertAndSend(
-                "/topic/chat/" + request.getConversationId(),
+                "/topic/chat/"
+                        + request.getConversationId(),
                 response
         );
     }

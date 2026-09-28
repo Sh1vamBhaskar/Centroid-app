@@ -167,4 +167,31 @@ public class InteractionService {
 
         return interactionRepository.save(interaction);
     }
+    public Interaction getLatestInteraction(
+            String currentUserEmail,
+            Long otherUserId) {
+
+        User currentUser = userRepository.findByEmail(currentUserEmail)
+                .orElseThrow(() ->
+                        new RuntimeException("Current user not found"));
+
+        User otherUser = userRepository.findById(otherUserId)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
+
+        if (currentUser.getId().equals(otherUser.getId())) {
+            throw new IllegalArgumentException(
+                    "You cannot check interaction status with yourself"
+            );
+        }
+
+        return interactionRepository
+                .findInteractionsBetweenUsers(
+                        currentUser,
+                        otherUser
+                )
+                .stream()
+                .findFirst()
+                .orElse(null);
+    }
 }

@@ -28,6 +28,7 @@ public class ProfileController {
 
         ProfileResponse response = new ProfileResponse(
                 profile.getId(),
+                profile.getUser().getId(),
                 profile.getDisplayName(),
                 profile.getProfilePicture(),
                 profile.getSocialLink(),
@@ -46,6 +47,7 @@ public class ProfileController {
 
         ProfileResponse response = new ProfileResponse(
                 profile.getId(),
+                profile.getUser().getId(),
                 profile.getDisplayName(),
                 profile.getProfilePicture(),
                 profile.getSocialLink(),
@@ -66,6 +68,7 @@ public class ProfileController {
 
         ProfileResponse response = new ProfileResponse(
                 profile.getId(),
+                profile.getUser().getId(),
                 profile.getDisplayName(),
                 profile.getProfilePicture(),
                 profile.getSocialLink(),

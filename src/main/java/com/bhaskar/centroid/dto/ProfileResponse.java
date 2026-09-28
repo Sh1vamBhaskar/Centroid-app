@@ -8,6 +8,7 @@ import lombok.Getter;
 public class ProfileResponse {
 
     private Long id;
+    private Long userId;
     private String displayName;
     private String profilePicture;
     private String socialLink;
