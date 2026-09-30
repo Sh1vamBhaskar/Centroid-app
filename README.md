@@ -1,265 +1,10 @@
-## Application Flow
-
-```text
-Register / Login
-       ↓
-Create / Update Profile
-       ↓
-Share Location
-       ↓
-Set Discovery Radius
-       ↓
-Discover Nearby Users
-       ↓
-View Nearby User Profile
-       ↓
-Send "Say Hi" Request
-       ↓
-Recipient Accepts / Declines
-       ↓
-        ┌───────────────┐
-        │    ACCEPTED   │
-        └───────┬───────┘
-                ↓
-       Conversation Created
-                ↓
-          Open Chat
-                ↓
-      Real-Time Messaging
-
-Interaction Flow
-User A
-  │
-  │ Say Hi
-  ▼
-User B
-  │
-  ├── Decline ──→ Request Ends
-  │
-  └── Accept
-        │
-        ▼
-   Conversation
-        │
-        ▼
-    Real-Time Chat
-
-
-That will render much more cleanly.
-
----
-
-## 2. System Architecture
-
-Then keep architecture **separate** from the user flow:
-
-```markdown
-## System Architecture
-
-```text
-                 ┌──────────────────────┐
-                 │    Flutter App       │
-                 │      Android         │
-                 └──────────┬───────────┘
-                            │
-                  REST API / JWT
-                            │
-                  WebSocket / STOMP
-                            │
-                            ▼
-                 ┌──────────────────────┐
-                 │    Spring Boot       │
-                 │       Backend        │
-                 ├──────────────────────┤
-                 │ Authentication       │
-                 │ Profile Management   │
-                 │ Location Services    │
-                 │ Interactions         │
-                 │ Conversations        │
-                 │ Messaging            │
-                 └──────────┬───────────┘
-                            │
-                            ▼
-                 ┌──────────────────────┐
-                 │ PostgreSQL + PostGIS │
-                 ├──────────────────────┤
-                 │ Users                │
-                 │ Profiles             │
-                 │ Locations            │
-                 │ Interactions         │
-                 │ Conversations        │
-                 │ Messages             │
-                 └──────────────────────┘
-
-
-### Your README should then look like:
-
-```text
-Features
-   ↓
-Application Flow
-   ↓
-System Architecture
-   ↓
-Tech Stack
-   ↓
-Project Structure
-   ↓
-Backend Setup
-   ↓
-Frontend Setup
-   ↓
-Core Backend Modules
-   ↓
-Real-Time Chat
-   ↓
-Security
-   ↓
-Testing
-   ↓
-Future Improvements
-
-One more correction: in your screenshot, { Frontend } is being displayed literally. That's because the README currently has something like:
-{ Frontend }
-
-Instead, use proper Markdown headings:
-### Frontend
-
-- Flutter
-- Dart
-- Android
-- REST API integration
-- WebSocket/STOMP
-- flutter_secure_storage
-- Geolocation services
-
-### Backend
-
-- Java
-- Spring Boot
-- Spring Security
-- JWT
-- REST APIs
-- WebSocket
-- STOMP
-- Hibernate / JPA
-- Hibernate Spatial
-
-### Database
-
-- PostgreSQL
-- PostGIS
-
-This will make the README look much more professional and intentional on GitHub.
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-bro i think we  did a mistake , that readme was specifically for frontend part , nut in readme .md file for whole centroid is empty bro
-
-
-
-
-
- 
-
-
-
-
-
-
-Yes — you're right. We made a README placement mistake.
-What happened is:
-- frontend/README.md → this is the Flutter-specific README from the old Centroid-App-Flutter repository.
-- Root Centroid-app/README.md → this should be the main README for the entire Centroid project, and yours is currently empty.
-So do not replace frontend/README.md with the full-project README. It is perfectly reasonable to keep a frontend-specific README there.
-Correct structure
-Centroid-app/
-│
-├── README.md                 ← MAIN README: entire Centroid project
-│
-├── frontend/
-│   ├── README.md             ← Flutter-specific README
-│   ├── lib/
-│   ├── android/
-│   ├── pubspec.yaml
-│   └── ...
-│
-├── src/                      ← Spring Boot backend
-├── pom.xml
-└── ...
-
-What we should do now
-We should create the root README.md specifically for Centroid as a complete full-stack project, covering:
-1. Centroid overview
-2. Why the project exists / core idea
-3. Key features
-4. Actual application flow
-5. System architecture
-6. Frontend + backend tech stack
-7. Project structure
-8. Authentication/JWT
-9. Location + PostGIS
-10. Interaction workflow
-11. Conversation + WebSocket chat
-12. Security/privacy
-13. Setup instructions
-14. API overview
-15. Testing
-16. Future improvements
-17. Screenshots/demo section
-And the existing:
-frontend/README.md
-
-can remain focused specifically on running and understanding the Flutter application.
-So we haven't damaged anything. We just need to put the full-project README in the correct location: the root Centroid-app/README.md.
-If you want, I can now give you the complete polished root README.md for Centroid, with the application flow and architecture formatted correctly for GitHub.
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-yes please
-
-
-
-
-
- 
-
-
-
-
-
-
-Yes. For the root Centroid-app/README.md, I would make it the project-level README and keep frontend/README.md focused only on Flutter.
-Below is a polished version based on the actual architecture and features we implemented.
 # Centroid
 
 ### Location-Based Social & Real-Time Chat Platform
 
 Centroid is a full-stack location-based social and chat application that allows users to discover people nearby, view their profiles, send connection requests, and communicate through real-time messaging after a connection is accepted.
 
-The project consists of a Flutter Android application and a Spring Boot backend, backed by PostgreSQL/PostGIS for location-aware data and WebSocket/STOMP for real-time communication.
+The project combines a Flutter Android application with a Spring Boot backend, PostgreSQL/PostGIS for location-aware data, JWT-based authentication, and WebSocket/STOMP for real-time communication.
 
 ---
 
@@ -279,14 +24,14 @@ Users can:
 - View nearby users and their profiles
 - Send a "Say Hi" connection request
 - Accept or decline incoming requests
-- Create conversations after accepting a request
+- Create conversations after a connection is accepted
 - Exchange messages in real time
 
 ---
 
 ## Features
 
-- 🔐 JWT-based authentication
+- 🔐 JWT-based user authentication
 - 👤 User profile management
 - 📍 Location-based nearby-user discovery
 - 🎯 Configurable discovery radius
@@ -311,7 +56,7 @@ Users can:
                              │
                              ▼
                     ┌──────────────────┐
-                    │  Create / Update │
+                    │ Create / Update  │
                     │     Profile      │
                     └────────┬─────────┘
                              │
@@ -540,7 +285,7 @@ The backend validates rules including:
 - Existing accepted connections cannot be duplicated.
 - Reverse pending/accepted interactions are handled.
 - Declined interactions can be retried.
-6. Conversations
+Conversations
 A conversation is created only after an interaction has been accepted.
 Interaction
      │
@@ -602,7 +347,7 @@ Subscribed Clients
 
 This allows messages to be delivered in real time without repeatedly polling the backend.
 Security & Privacy
-Centroid applies authorization and privacy controls at the backend level.
+Centroid applies authentication, authorization, and privacy controls at the backend level.
 Security
 - JWT authentication
 - Spring Security
@@ -740,7 +485,7 @@ Potential future improvements include:
 - Automated unit and integration testing
 - Improved location privacy controls
 - Cloud deployment and monitoring
-Repository
+Repository Structure
 Centroid is maintained as a single repository containing both the mobile frontend and backend:
 Centroid-app
 │
@@ -748,24 +493,13 @@ Centroid-app
 │
 └── src/            → Spring Boot backend
 
-This structure keeps the complete application in one repository while maintaining a clear separation between the frontend and backend.
+Keeping both components in one repository makes it easier to develop, test, and maintain the complete application as a single project.
 Author
 Shivam Bhaskar
 B.Tech Computer Science Engineering
 GitHub:
 https://github.com/Sh1vamBhaskar/Centroid-app
-
-### One correction before you paste it
-
-In the **Project Structure** section, don't blindly use the package folders I listed if your actual backend has slightly different package names. The rest of the README can be used as-is, but the tree should match your repository exactly.
-
-And importantly, this README belongs at:
-
-```text
-Centroid-app/
-└── README.md        ← paste the above here
-
-while this stays separate:
-Centroid-app/
-└── frontend/
-    └── README.md    ← Flutter-specific README
+Project Status
+Completed
+The core Centroid workflow — authentication, profile management, location-based discovery, connection requests, conversations, REST messaging, and real-time WebSocket chat — has been implemented and integrated across the Flutter frontend and Spring Boot backend.
+```
