@@ -492,4 +492,44 @@ class ApiService {
       'Unable to load messages (${response.statusCode})',
     );
   }
+  static Future<List<Map<String, dynamic>>> getMyConversations() async {
+    final token = await _authStorage.getToken();
+
+    if (token == null || token.isEmpty) {
+      throw Exception('Please login again');
+    }
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/conversations'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final data = jsonDecode(response.body);
+
+      if (data is List) {
+        return data
+            .map((item) => Map<String, dynamic>.from(item as Map))
+            .toList();
+      }
+
+      throw Exception('Invalid conversations response');
+    }
+
+    Map<String, dynamic> errorData = {};
+
+    if (response.body.isNotEmpty) {
+      try {
+        errorData = jsonDecode(response.body) as Map<String, dynamic>;
+      } catch (_) {}
+    }
+
+    throw Exception(
+      errorData['message'] ??
+          errorData['error'] ??
+          'Unable to load conversations',
+    );
+  }
 }

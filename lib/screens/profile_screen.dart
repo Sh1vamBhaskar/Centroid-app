@@ -444,20 +444,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
 
-        const SizedBox(height: 12),
 
-        SizedBox(
-          width: double.infinity,
-          height: 52,
-          child: OutlinedButton.icon(
-            onPressed: _logout,
-            icon: const Icon(
-              Icons.logout_rounded,
-              size: 19,
-            ),
-            label: const Text('Log out'),
-          ),
-        ),
       ],
     );
   }
@@ -654,9 +641,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
         20,
         32,
       ),
-      child: _isEditing
-          ? _buildEditMode()
-          : _buildViewMode(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _isEditing
+              ? _buildEditMode()
+              : _buildViewMode(),
+
+          const SizedBox(height: 12),
+
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: OutlinedButton.icon(
+              onPressed: _logout,
+              icon: const Icon(
+                Icons.logout_rounded,
+                size: 19,
+              ),
+              label: const Text('Log out'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,10 +1,12 @@
+
 import 'package:flutter/material.dart';
 
+import 'chats_screen.dart';
 import 'chat_screen.dart';
 import 'profile_screen.dart';
 
 
-import 'requests_screen.dart';
+
 import 'dart:async';
 import '../services/location_service.dart';
 
@@ -854,18 +856,29 @@ class _NearbyScreenState extends State<NearbyScreen> {
                     ),
                   ),
 
-                  // Profile icon
-                  Container(
-                    width: 42,
-                    height: 42,
-                    decoration: const BoxDecoration(
-                      color: AppColors.primarySoft,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.person_outline_rounded,
-                      size: 21,
-                      color: AppColors.primary,
+                  // Profile shortcut
+                  Material(
+                    color: AppColors.primarySoft,
+                    shape: const CircleBorder(),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const ProfileScreen(),
+                          ),
+                        );
+                      },
+                      customBorder: const CircleBorder(),
+                      child: const SizedBox(
+                        width: 44,
+                        height: 44,
+                        child: Icon(
+                          Icons.person_outline_rounded,
+                          size: 22,
+                          color: AppColors.primary,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -1078,18 +1091,17 @@ class _NearbyScreenState extends State<NearbyScreen> {
               ),
               child: Material(
                 color: AppColors.surface,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(18),
                 child: InkWell(
                   onTap: openRadiusSheet,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(18),
                   child: Container(
-                    height: 58,
+                    height: 64,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 15,
+                      horizontal: 14,
                     ),
                     decoration: BoxDecoration(
-                      borderRadius:
-                      BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(18),
                       border: Border.all(
                         color: AppColors.border,
                       ),
@@ -1097,67 +1109,68 @@ class _NearbyScreenState extends State<NearbyScreen> {
                     child: Row(
                       children: [
                         Container(
-                          width: 34,
-                          height: 34,
-                          decoration:
-                          const BoxDecoration(
-                            color:
-                            AppColors.primarySoft,
+                          width: 38,
+                          height: 38,
+                          decoration: const BoxDecoration(
+                            color: AppColors.primarySoft,
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
                             Icons.radar_rounded,
-                            size: 18,
+                            size: 19,
                             color: AppColors.primary,
                           ),
                         ),
 
-                        const SizedBox(width: 11),
+                        const SizedBox(width: 12),
 
                         const Expanded(
                           child: Column(
-                            mainAxisAlignment:
-                            MainAxisAlignment.center,
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Discovering nearby',
+                                'Discovery radius',
                                 style: TextStyle(
                                   fontSize: 13,
-                                  fontWeight:
-                                  FontWeight.w600,
-                                  color:
-                                  AppColors.textPrimary,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.textPrimary,
                                 ),
                               ),
-                              SizedBox(height: 2),
+                              SizedBox(height: 3),
                               Text(
-                                'Tap to change radius',
-                                style:
-                                AppTextStyles.caption,
+                                'People you can discover nearby',
+                                style: AppTextStyles.caption,
                               ),
                             ],
                           ),
                         ),
 
-                        Text(
-                          _formatRadius(radius),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight:
-                            FontWeight.w700,
-                            color: AppColors.primary,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primarySoft,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            _formatRadius(radius),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.primary,
+                            ),
                           ),
                         ),
 
-                        const SizedBox(width: 3),
+                        const SizedBox(width: 5),
 
                         const Icon(
                           Icons.chevron_right_rounded,
                           size: 21,
-                          color:
-                          AppColors.textTertiary,
+                          color: AppColors.textTertiary,
                         ),
                       ],
                     ),
@@ -1183,8 +1196,7 @@ class _NearbyScreenState extends State<NearbyScreen> {
               child: SafeArea(
                 top: false,
                 child: Row(
-                  mainAxisAlignment:
-                  MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     const _NavItem(
                       icon: Icons.radar_rounded,
@@ -1197,17 +1209,14 @@ class _NearbyScreenState extends State<NearbyScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) =>
-                            const RequestsScreen(),
+                            builder: (_) => const ChatsScreen(),
                           ),
                         );
                       },
-                      borderRadius:
-                      BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(16),
                       child: const _NavItem(
-                        icon:
-                        Icons.person_add_alt_1_rounded,
-                        label: 'Requests',
+                        icon: Icons.chat_bubble_outline_rounded,
+                        label: 'Chats',
                       ),
                     ),
 
@@ -1220,8 +1229,7 @@ class _NearbyScreenState extends State<NearbyScreen> {
                           ),
                         );
                       },
-                      borderRadius:
-                      BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(16),
                       child: const _NavItem(
                         icon: Icons.person_outline_rounded,
                         label: 'Profile',
@@ -1256,19 +1264,30 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 75,
+      width: 82,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            size: 21,
-            color: selected
-                ? AppColors.primary
-                : AppColors.textTertiary,
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 160),
+            width: 38,
+            height: 30,
+            decoration: BoxDecoration(
+              color: selected
+                  ? AppColors.primarySoft
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              icon,
+              size: 21,
+              color: selected
+                  ? AppColors.primary
+                  : AppColors.textTertiary,
+            ),
           ),
 
-          const SizedBox(height: 5),
+          const SizedBox(height: 3),
 
           Text(
             label,
