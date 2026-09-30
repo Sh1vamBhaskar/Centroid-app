@@ -74,18 +74,9 @@ User B
     Real-Time Chat
 
 
-That will render much more cleanly.
 
----
 
-## 2. System Architecture
 
-Then keep architecture **separate** from the user flow:
-
-```markdown
-## System Architecture
-
-```text
                  ┌──────────────────────┐
                  │    Flutter App       │
                  │      Android         │
@@ -121,55 +112,3 @@ Then keep architecture **separate** from the user flow:
                  └──────────────────────┘
 
 
-### Your README should then look like:
-
-```text
-Features
-   ↓
-Application Flow
-   ↓
-System Architecture
-   ↓
-Tech Stack
-   ↓
-Project Structure
-   ↓
-Backend Setup
-   ↓
-Frontend Setup
-   ↓
-Core Backend Modules
-   ↓
-Real-Time Chat
-   ↓
-Security
-   ↓
-Testing
-   ↓
-Future Improvements
-
-One more correction: in your screenshot, { Frontend } is being displayed literally. That's because the README currently has something like:
-{ Frontend }
-
-Instead, use proper Markdown headings:
-### Frontend
-
-- Flutter
-- Dart
-- Android
-- REST API integration
-- WebSocket/STOMP
-- flutter_secure_storage
-- Geolocation services
-
-### Backend
-
-- Java
-- Spring Boot
-- Spring Security
-- JWT
-- REST APIs
-- WebSocket
-- STOMP
-- Hibernate / JPA
-- Hibernate Spatial
